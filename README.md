@@ -45,7 +45,7 @@ graph TD
         Ansible[Playbook Ansible] -->|SSH / Python| Host[Serveur Ubuntu]
         Ansible -->|Provisioning Script| NetBox
     end
-
+```
 
 ⚡ Démarrage Rapide
 
