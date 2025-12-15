@@ -1,0 +1,68 @@
+---
+- name: Provisioning d'une VM dans NetBox
+  hosts: localhost
+  connection: local
+  gather_facts: no
+  vars:
+    # --- MODIFIE L'IP ICI ---
+    netbox_url: "http://192.168.103.199:8000"
+    # --- TA CLÉ API ---
+    netbox_token: "0123456789abcdef0123456789abcdef01234567"
+    vm_name: "Web-Server-Test"
+    cluster_name: "Cluster-VirtualBox"
+
+  tasks:
+    - name: Créer un Type de Cluster (Prérequis)
+      netbox.netbox.netbox_cluster_type:
+        netbox_url: "{{ netbox_url }}"
+        netbox_token: "{{ netbox_token }}"
+        data:
+          name: "On-Premise"
+          slug: "on-premise"
+        state: present
+
+    - name: Créer le Cluster (L'hyperviseur virtuel)
+      netbox.netbox.netbox_cluster:
+        netbox_url: "{{ netbox_url }}"
+        netbox_token: "{{ netbox_token }}"
+        data:
+          name: "{{ cluster_name }}"
+          cluster_type: "On-Premise"
+        state: present
+
+    - name: Créer la VM "{{ vm_name }}"
+      netbox.netbox.netbox_virtual_machine:
+        netbox_url: "{{ netbox_url }}"
+        netbox_token: "{{ netbox_token }}"
+        data:
+          name: "{{ vm_name }}"
+          cluster: "{{ cluster_name }}"
+          site: "IUT Roanne"
+          status: active
+          vcpus: 2
+          memory: 4096
+          disk: 50
+        state: present
+
+    # --- NOUVELLE TÂCHE AJOUTÉE ICI ---
+    - name: Créer l'interface réseau eth0 sur la VM
+      netbox.netbox.netbox_vm_interface:
+        netbox_url: "{{ netbox_url }}"
+        netbox_token: "{{ netbox_token }}"
+        data:
+          virtual_machine: "{{ vm_name }}"
+          name: "eth0"
+          enabled: true
+        state: present
+
+    - name: Attribuer une IP à l'interface eth0 de la VM
+      netbox.netbox.netbox_ip_address:
+        netbox_url: "{{ netbox_url }}"
+        netbox_token: "{{ netbox_token }}"
+        data:
+          address: "192.168.10.55/24"
+          status: active
+          assigned_object:
+            name: "eth0"
+            virtual_machine: "{{ vm_name }}"
+        state: present
