@@ -1,0 +1,51 @@
+---
+- name: Créer le répertoire de l'application
+  file:
+    path: /opt/netbox
+    state: directory
+    mode: '0755'
+
+- name: Créer le répertoire pour les fichiers d'environnement
+  file:
+    path: /opt/netbox/env
+    state: directory
+    mode: '0700'
+
+- name: Configurer les variables Postgres (env file)
+  copy:
+    dest: /opt/netbox/env/postgres.env
+    content: |
+      POSTGRES_DB=netbox
+      POSTGRES_USER=netbox
+      POSTGRES_PASSWORD=netbox_password_super_secure
+
+- name: Configurer les variables NetBox (env file)
+  copy:
+    dest: /opt/netbox/env/netbox.env
+    content: |
+      ALLOWED_HOSTS=*
+      DB_HOST=postgres
+      DB_NAME=netbox
+      DB_USER=netbox
+      DB_PASSWORD=netbox_password_super_secure
+      REDIS_HOST=redis
+      SECRET_KEY=le_super_secret_key_de_netbox_qui_doit_etre_long_50_caracteres
+      # Création automatique du superuser au premier lancement
+      SUPERUSER_NAME=admin
+      SUPERUSER_EMAIL=admin@example.com
+      SUPERUSER_PASSWORD=admin
+
+- name: Copier le fichier docker-compose
+  template:
+    src: docker-compose.yml.j2
+    dest: /opt/netbox/docker-compose.yml
+
+- name: Lancer la stack Docker NetBox
+  command: docker compose up -d
+  args:
+    chdir: /opt/netbox
+  register: output
+
+- name: Afficher le résultat du lancement
+  debug:
+    var: output.stdout_lines

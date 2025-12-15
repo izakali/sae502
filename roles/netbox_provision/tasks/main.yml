@@ -1,0 +1,31 @@
+---
+- name: Attendre que NetBox soit totalement démarré (Healthcheck)
+  uri:
+    url: "http://127.0.0.1:8000"
+    status_code: 200
+  register: result
+  until: result.status == 200
+  retries: 20
+  delay: 10
+
+- name: Transférer le script du Chef vers le Client (dossier /tmp)
+  copy:
+    src: seed_data.py
+    dest: /tmp/seed_data.py
+    mode: '0644'
+
+- name: Injecter le script du Client vers le conteneur NetBox
+  command: docker cp /tmp/seed_data.py netbox-app:/opt/netbox/seed_data.py
+
+# --- MODIFICATION ICI ---
+- name: Exécuter le script de seed via le shell NetBox
+  command: >
+    docker exec netbox-app
+    /opt/netbox/venv/bin/python /opt/netbox/netbox/manage.py shell
+    --command="exec(open('/opt/netbox/seed_data.py').read())"
+  register: seed_output
+# ------------------------
+
+- name: Afficher le résultat de l'injection
+  debug:
+    var: seed_output.stdout_lines

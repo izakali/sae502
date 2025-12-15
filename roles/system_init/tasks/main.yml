@@ -1,0 +1,16 @@
+---
+- name: Mettre à jour le cache APT
+  apt:
+    update_cache: yes
+    cache_valid_time: 3600
+
+- name: Installer les paquets de base nécessaires
+  apt:
+    name:
+      - curl
+      - git
+      - ufw
+      - python3-venv
+      - ca-certificates
+      - gnupg
+    state: present

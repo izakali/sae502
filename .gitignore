@@ -1,0 +1,11 @@
+.retry
+*.retry
+.DS_Store
+*.swp
+env/
+venv/
+__pycache__/
+inventory/hosts.ini
+# On ignore la clé privée SSH si elle traîne, par sécurité
+id_ed25519
+id_ed25519.pub

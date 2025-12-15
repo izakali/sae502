@@ -1,0 +1,49 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: netbox-postgres
+    env_file: env/postgres.env
+    volumes:
+      - netbox-postgres-data:/var/lib/postgresql/data
+    restart: always
+
+  redis:
+    image: redis:7-alpine
+    container_name: netbox-redis
+    command:
+      - sh
+      - -c # Disable Redis snapshots to improve performance
+      - redis-server --appendonly yes --save ""
+    volumes:
+      - netbox-redis-data:/data
+    restart: always
+
+  netbox:
+    image: netboxcommunity/netbox:latest
+    container_name: netbox-app
+    depends_on:
+      - postgres
+      - redis
+    ports:
+      - "8000:8080"
+    env_file: env/netbox.env
+    volumes:
+      - ./media:/opt/netbox/netbox/media
+    restart: always
+
+  netbox-worker:
+    image: netboxcommunity/netbox:latest
+    container_name: netbox-worker
+    command: /opt/netbox/venv/bin/python /opt/netbox/netbox/manage.py rqworker
+    depends_on:
+      - netbox
+    env_file: env/netbox.env
+    volumes:
+      - ./media:/opt/netbox/netbox/media
+    restart: always
+
+volumes:
+  netbox-postgres-data:
+  netbox-redis-data:

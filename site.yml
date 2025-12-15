@@ -1,0 +1,10 @@
+---
+- name: Déploiement de l'infrastructure NetBox
+  hosts: netbox
+  become: yes  # Cela dit à Ansible d'utiliser "sudo" pour tout
+
+  roles:
+    - system_init
+    - docker_stack
+    - netbox_deploy
+    - netbox_provision
