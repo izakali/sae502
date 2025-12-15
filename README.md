@@ -59,7 +59,6 @@ Prérequis
     Une clé SSH configurée entre le poste de contrôle et la cible.
 
 1. Cloner le dépôt
-Bash
 
 	git clone [https://github.com/izakali/sae502-netbox.git](https://github.com/izakali/sae502-netbox.git)
 	cd sae502-netbox
@@ -70,7 +69,7 @@ Bash
 Éditez le fichier inventory/hosts.ini pour renseigner l'IP de votre machine cible :
 Ini, TOML
 
-[netbox]
+	[netbox]
 	192.168.X.X ansible_user=votre_utilisateur_ssh
 
 3. Lancer le déploiement
