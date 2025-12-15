@@ -61,8 +61,8 @@ Prérequis
 1. Cloner le dépôt
 Bash
 
-git clone [https://github.com/izakali/sae502-netbox.git](https://github.com/izakali/sae502-netbox.git)
-cd sae502-netbox
+	git clone [https://github.com/izakali/sae502-netbox.git](https://github.com/izakali/sae502-netbox.git)
+	cd sae502-netbox
 
 
 2. Configurer l'inventaire
@@ -71,14 +71,14 @@ cd sae502-netbox
 Ini, TOML
 
 [netbox]
-192.168.X.X ansible_user=votre_utilisateur_ssh
+	192.168.X.X ansible_user=votre_utilisateur_ssh
 
 3. Lancer le déploiement
 
 Exécutez le playbook principal. Le mot de passe sudo de la cible sera demandé (-K).
 Bash
 
-ansible-playbook site.yml -K
+	ansible-playbook site.yml -K
 
 🖥️ Accès et Vérification
 
@@ -99,7 +99,7 @@ Rendez-vous dans les menus suivants pour vérifier l'injection automatique des d
     IPAM > Prefixes : Le réseau 192.168.10.0/24 est déclaré.
 
 📂 Structure du projet
-Plaintext
+```Plaintext
 
 sae502-netbox/
 ├── ansible.cfg          # Configuration globale Ansible
